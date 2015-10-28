@@ -23,6 +23,15 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"runtime"
+	"runtime/pprof"
+	"strconv"
+	"strings"
+	"syscall"
+
 	"github.com/mozilla-services/heka/message"
 	"github.com/mozilla-services/heka/pipeline"
 	_ "github.com/mozilla-services/heka/plugins"
@@ -42,18 +51,10 @@ import (
 	_ "github.com/mozilla-services/heka/plugins/statsd"
 	_ "github.com/mozilla-services/heka/plugins/tcp"
 	_ "github.com/mozilla-services/heka/plugins/udp"
-	"io/ioutil"
-	"os"
-	"path/filepath"
-	"runtime"
-	"runtime/pprof"
-	"strconv"
-	"strings"
-	"syscall"
 )
 
 const (
-	VERSION = "0.9.2"
+	VERSION = "0.10.0-dev"
 )
 
 func setGlobalConfigs(config *HekadConfig) (*pipeline.GlobalConfigStruct, string, string) {
@@ -108,6 +109,8 @@ func main() {
 	if err != nil {
 		pipeline.LogError.Fatal("Error reading config: ", err)
 	}
+	pipeline.LogInfo.SetFlags(config.LogFlags)
+	pipeline.LogError.SetFlags(config.LogFlags)
 	if config.SampleDenominator <= 0 {
 		pipeline.LogError.Fatalln("'sample_denominator' value must be greater than 0.")
 	}

@@ -164,6 +164,13 @@ Config:
     The maximum size (in bytes) of message can be sent during processing.
     Defaults to 64KiB.
 
+.. versionadded:: 0.10
+
+- log_flags (int):
+    Control the prefix for STDOUT and STDERR logs. Common values are 3 (date
+    and time, the default) or 0 (no prefix). See
+    `https://golang.org/pkg/log/#pkg-constants Go documentation`_ for details.
+
 Example hekad.toml file
 =======================
 
@@ -253,10 +260,13 @@ Example:
 Configuring Restarting Behavior
 ===============================
 
-Plugins that support being restarted have a set of options that govern how the
-restart is handled. If preferred, the plugin can be configured to not restart
-at which point hekad will exit, or it could be restarted only 100 times, or
-restart attempts can proceed forever.
+Plugins that support being restarted have a set of options that govern how a
+restart is handled if they exit with an error.  If preferred, the plugin can be
+configured to not restart, or it could be restarted only 100 times, or restart
+attempts can proceed forever.
+Once the `max_retries` have been exceeded the plugin will be unregistered,
+potentially triggering hekad to shutdown (depending on the plugin's `can_exit`
+configuration).
 
 Adding the restarting configuration is done by adding a config section to a
 plugin's configuration called `retries`. A small amount of jitter will be

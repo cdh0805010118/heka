@@ -31,11 +31,11 @@ import (
 
 // A location in a logstream indicating the farthest that has been read
 type LogstreamLocation struct {
-	SeekPosition int64            `json:"seek"`
-	Filename     string           `json:"file_name"`
-	Hash         string           `json:"last_hash"`
-	JournalPath  string           `json:"-"`
-	lastLine     *ringbuf.Ringbuf `json:"-"`
+	SeekPosition int64  `json:"seek"`
+	Filename     string `json:"file_name"`
+	Hash         string `json:"last_hash"`
+	JournalPath  string `json:"-"`
+	lastLine     *ringbuf.Ringbuf
 }
 
 var LINEBUFFERLEN = 500
@@ -410,7 +410,7 @@ func SeekInFile(path string, position *LogstreamLocation) (*os.File, io.Reader, 
 		expectedN int64
 	)
 	if seekPos >= 0 {
-		n, err = reader.Read(buf)
+		n, err = io.ReadFull(reader, buf)
 		expectedN = int64(LINEBUFFERLEN)
 	} else {
 		n, err = reader.Read(buf[-seekPos:])
